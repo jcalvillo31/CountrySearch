@@ -9,36 +9,42 @@ import SwiftUI
 import SwiftData
 
 struct SavedCountryDetailView: View {
-    var country : SavedCountry
+    var country: SavedCountry
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        
         ScrollView(showsIndicators: false) {
-            VStack {
+    
+            FlagImageView(imageData: country.flagImage, width: 300, height: 200)
+                .padding(.bottom, 40)
+                .padding(.top, 10)
                 
-                FlagImageView(imageData: country.flagImage, width: 300, height: 200)
-                    .padding(.bottom, 40)
-                
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Country: ").bold() + Text(country.name)
-                    Text("Region: ").bold() + Text(country.region)
-                    Text("Subregion: ").bold() + Text(country.subregion ?? "N/A")
-                    Text("Capital: ").bold() + Text(country.capital?.joined(separator: ", ") ?? "N/A")
-                    Text("Currency: ").bold() + Text(country.currencies ?? "N/A")
+            VStack(spacing: 10) {
+                Text("Country: ").bold() + Text(country.name)
+                Text("Region: ").bold() + Text(country.region)
+                Text("Subregion: ").bold() + Text(country.subregion ?? "N/A")
+                Text("Capital: ")
+                    .bold() + Text(
+                        country.capital?.joined(separator: ", ") ?? "N/A"
+                    )
+                    
+                VStack {
+                    Text("Currency:").bold()
+                    ForEach(country.currencies ?? ["N/A"], id: \.self) { c in
+                        Text("• \(c)")
+                    }
                 }
-                .font(.title2)
-                .padding(.top)
-                
-                Button("Delete") {
-                    context.delete(country)
-                    try? context.save()
-                    dismiss()
-                }
-                .buttonStyle(.borderedProminent)
             }
-            .padding()
+            .padding(.top)
+                
+            Button("Delete") {
+                context.delete(country)
+                try? context.save()
+                dismiss()
+            }
+            .buttonStyle(.borderedProminent)
+            .padding(.vertical)
             
             if country.coordinates != nil {
                 MapView2(country: country)
@@ -50,7 +56,7 @@ struct SavedCountryDetailView: View {
     }
 }
 
-#Preview {
+#Preview("With values") {
     SavedCountryDetailView(country:
                             SavedCountry(
                                 id: "asdf",
@@ -58,8 +64,22 @@ struct SavedCountryDetailView: View {
                                 capital: ["Washington D.C."],
                                 region: "Americas",
                                 subregion: "North America",
-                                currencies: "USD $ Dollars",
+                                currencies: ["USD $ Dollars, MXN $ Pesos"],
                                 flagURL: "something",
                                 coordinates: [-4.4, 5.2])
+    )
+}
+
+#Preview("Nil values") {
+    SavedCountryDetailView(country:
+                            SavedCountry(
+                                id: "asdf",
+                                name: "USA",
+                                capital: nil,
+                                region: "Americas",
+                                subregion: nil,
+                                currencies: nil,
+                                flagURL: nil,
+                                coordinates: nil)
     )
 }

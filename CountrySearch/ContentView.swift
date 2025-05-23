@@ -9,47 +9,34 @@ import SwiftUI
 
 struct ContentView: View {
     
-    var service = DataService()
-    @State var countries = [Country]()
-    @State var language = ""
-    @State var error: String?
-    @State private var sortAscending = false
+    private var service = DataService()
+    @State private var countries = [Country]()
+    @State private var language = ""
+    @State private var error: String?
+    @State private var sortOrder = false
     
     var body: some View {
         
         NavigationStack{
             VStack {
                 HStack {
+                    
                     TextField("Search by language (e.g. spanish)", text: $language)
                         .textFieldStyle(.roundedBorder)
+                    
                     Button("Search") {
-                        Task {
-                            do {
-                                error = nil
-                                let results = try await service.search(language: language)
-                                countries = results.sorted(by: { a, b in
-                                    a.id < b.id
-                                })
-                            } catch {
-                                self.error = error.localizedDescription
-                                countries.removeAll()
-                            }
-                        }
+                        handleSearch()
                     }
                     .buttonStyle(.borderedProminent)
                 }
                 
-                Toggle("Sort Descending", isOn: $sortAscending)
-                    .onChange(of: sortAscending) { _, _ in
-                        countries.reverse()
-                    }
-                
+                Toggle("Sort Descending", isOn: $sortOrder)
                 
                 if let errorMessage = error {
                     Text(errorMessage).foregroundStyle(.red)
                 }
                 
-                List(countries) { country in
+                List(sortedCountries) { country in
                     NavigationLink(destination: DetailView(country: country)) {
                         HStack {
                             AsyncImage(url: URL(string: country.flags?.png ?? "")) { image in
@@ -81,6 +68,31 @@ struct ContentView: View {
                         Text("Saved")
                     }
                 }
+            }
+        }
+    }
+    
+    private var sortedCountries: [Country] {
+        countries.sorted { a, b in
+            // valueIfTrue : valueIfFalse
+            sortOrder ? a.id > b.id : a.id < b.id
+        }
+    }
+    
+    private func handleSearch() {
+        Task {
+            do {
+                error = nil // reset error message upon new search
+                
+                let language = language
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                    .lowercased()
+                countries = try await service.search(language: language)
+                
+            } catch {
+                self.error = error.localizedDescription
+                // reset list after each search
+                countries.removeAll()
             }
         }
     }

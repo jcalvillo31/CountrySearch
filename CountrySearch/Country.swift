@@ -22,7 +22,7 @@ struct Country: Decodable, Identifiable {
     var capitalInfo: Coordinates?
     
     struct Coordinates: Decodable {
-        var latlng: [Double]
+        var latlng: [Double]? // sometimes nil
     }
     
     struct Name: Decodable {
@@ -50,13 +50,13 @@ class SavedCountry {
     var capital: [String]?
     var region: String
     var subregion: String?
-    var currencies: String?
+    var currencies: [String]?
     var flagURL: String?
     @Attribute(.externalStorage) var flagImage: Data?
     var coordinates: [Double]?
     
     init(id: String, name: String, capital: [String]? = nil, region: String, subregion: String? = nil,
-         currencies: String? = nil, flagURL: String? = nil, flagImage: Data? = nil, coordinates: [Double]? = nil)
+         currencies: [String]? = nil, flagURL: String? = nil, flagImage: Data? = nil, coordinates: [Double]? = nil)
     {
         self.id = id
         self.name = name
@@ -73,14 +73,11 @@ class SavedCountry {
         self.init(
             id: country.id,
             name: country.name.common,
-            // Some countries have several capitals
             capital: country.capital,
             region: country.region,
             subregion: country.subregion,
-            currencies: country.currencies?
-                .map { "\($0.key) \($0.value.symbol) \($0.value.name)" }
-                .joined(separator: ", "),
-            
+            currencies: country.currencies?.map {
+                "\($0.key) \($0.value.symbol) \($0.value.name)" },
             flagURL: country.flags?.png,
             flagImage: nil,
             coordinates: country.capitalInfo?.latlng
