@@ -63,9 +63,12 @@ struct ContentView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink {
-                        SavedCountries()
+                        SavedList()
                     } label: {
                         Text("Saved")
+                        Image(systemName: "chevron.right")
+                            .fontWeight(.medium)
+                            .padding(.leading, -5)
                     }
                 }
             }

@@ -60,7 +60,7 @@ struct DetailView: View {
                     .font(.title2)
             }
             
-            if country.capitalInfo != nil {
+            if country.capitalInfo?.latlng != nil {
                 MapView(country: country)
             } else {
                 Text("Map data not available")
