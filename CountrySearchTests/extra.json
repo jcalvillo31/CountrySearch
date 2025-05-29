@@ -1,0 +1,24 @@
+[
+  {
+    "name": {
+      "common": "USA",
+      "official": "United States of America"
+    },
+    "currencies": {
+      "USD": {
+        "name": "Dollar",
+        "symbol": "$"
+      }
+    },
+    "capital": ["Washington D.C."],
+    "region": "North America",
+    "flags": {
+      "png": "some url"
+    },
+    "capitalInfo": {
+      "latlng": [35.6, 139.7]
+    },
+    "population": 200
+  }
+]
+

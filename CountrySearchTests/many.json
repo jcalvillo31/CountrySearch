@@ -1,0 +1,16 @@
+[
+  {
+    "name": {
+      "common": "USA",
+      "official": "United States of America"
+    },
+    "region": "North America"
+  },
+  {
+    "name": {
+      "common": "Japan",
+      "official": "Japan"
+    },
+    "region": "Asia"
+  }
+]
