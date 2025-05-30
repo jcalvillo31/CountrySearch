@@ -51,24 +51,9 @@ struct SavedList: View {
     }
     
     var groupedByRegion: [CountryRegion] {
-        /// Group all the countries in SwiftData by region in dictionary format
-        /// region becomes the key
-        Dictionary(grouping: countries, by: { $0.region })
-        /// Call map on the Dictionary to convert back to array
-            .map { key, value in
-                CountryRegion(region: key, countries: value.sorted {$0.name < $1.name })
-            }
-            .sorted { a, b in
-                a.region < b.region
-            }
+       groupByRegion(countries)
     }
     
-}
-
-struct CountryRegion: Identifiable {
-    let region: String
-    let countries: [SavedCountry]
-    var id = UUID()
 }
 
 #Preview {
