@@ -9,11 +9,9 @@ import SwiftUI
 
 struct ContentView: View {
     
-    private var service = DataService()
-    @State private var countries = [Country]()
+    @State var viewModel = ViewModel()
     @State private var language = ""
-    @State private var error: String?
-    @State private var sortOrder = false
+    @State private var isSortDescending = false
     
     var body: some View {
         
@@ -25,14 +23,16 @@ struct ContentView: View {
                         .textFieldStyle(.roundedBorder)
                     
                     Button("Search") {
-                        handleSearch()
+                        Task {
+                            await viewModel.handleSearch(language: language)
+                        }
                     }
                     .buttonStyle(.borderedProminent)
                 }
                 
-                Toggle("Sort Descending", isOn: $sortOrder)
+                Toggle("Sort Descending", isOn: $isSortDescending)
                 
-                if let errorMessage = error {
+                if let errorMessage = viewModel.error {
                     Text(errorMessage).foregroundStyle(.red)
                 }
                 
@@ -76,29 +76,9 @@ struct ContentView: View {
     }
     
     private var sortedCountries: [Country] {
-        countries.sorted { a, b in
-            // valueIfTrue : valueIfFalse
-            sortOrder ? a.id > b.id : a.id < b.id
-        }
+        sortCountries(viewModel.countries, descending: isSortDescending)
     }
     
-    private func handleSearch() {
-        Task {
-            do {
-                error = nil // reset error message upon new search
-                
-                let language = language
-                    .trimmingCharacters(in: .whitespacesAndNewlines)
-                    .lowercased()
-                countries = try await service.search(language: language)
-                
-            } catch {
-                self.error = error.localizedDescription
-                // reset list after each search
-                countries.removeAll()
-            }
-        }
-    }
 }
 #Preview {
     ContentView()

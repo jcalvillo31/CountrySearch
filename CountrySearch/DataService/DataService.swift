@@ -7,7 +7,11 @@
 
 import Foundation
 
-struct DataService {
+protocol ServiceProtocol {
+    func search(language: String) async throws -> [Country]
+}
+
+struct DataService: ServiceProtocol {
     // Endpoint: https://restcountries.com/v3.1/lang/{language}
     
     func search(language: String) async throws -> [Country] {
@@ -33,4 +37,5 @@ struct DataService {
         }
         
     }
+    
 }
