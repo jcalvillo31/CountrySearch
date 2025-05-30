@@ -17,9 +17,9 @@ struct SavedList: View {
         NavigationStack {
             if !countries.isEmpty {
                 List{
-                    ForEach(groupedByRegion) { regionGroup in
-                        Section("Region: \(regionGroup.region)") {
-                            ForEach(regionGroup.countries) { country in
+                    ForEach(groupedByRegion) { group in
+                        Section("Region: \(group.region)") {
+                            ForEach(group.countries) { country in
                                 NavigationLink(destination: SavedCountryDetailView(country: country)) {
                                     HStack {
                                         FlagImageView(imageData: country.flagImage, width: 40, height: 40)
