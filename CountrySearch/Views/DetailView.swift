@@ -15,56 +15,62 @@ struct DetailView: View {
     @State var confirmSave = ""
     
     var body: some View {
-        ScrollView(showsIndicators: false) {
+        ZStack {
+            Color(.gray)
+                .opacity(0.1)
+                .edgesIgnoringSafeArea(.all)
             
-            Group {
-                AsyncImage(url: URL(string: country.flags?.png ?? "")) { image in
-                    image
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 300, height: 200)
-                            
-                } placeholder: {
-                    Image(systemName: "flag")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 200)
+            ScrollView(showsIndicators: false) {
+                
+                Group {
+                    AsyncImage(url: URL(string: country.flags?.png ?? "")) { image in
+                        image
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 300, height: 200)
+                        
+                    } placeholder: {
+                        Image(systemName: "flag")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 200)
+                        
+                    }
+                }
+                .padding(.bottom, 40)
+                .padding(.top, 10)
+                
+                VStack(alignment: .center, spacing: 10) {
+                    Text("Country: ").bold() + Text(country.name.common)
+                    Text("Region: ").bold() + Text(country.region)
+                    Text("Subregion: ").bold() + Text(country.subregion ?? "N/A")
+                    Text("Capital: ").bold() + Text(country.capital?.joined(separator: ", ") ?? "No capital")
+                    VStack() {
+                        Text("Currency:").bold()
+                        ForEach(currencyList, id: \.self) { c in
+                            Text("• \(c)")
+                        }
+                    }
                     
-                }
-            }
-            .padding(.bottom, 40)
-            .padding(.top, 10)
-            
-            VStack(alignment: .center, spacing: 10) {
-                Text("Country: ").bold() + Text(country.name.common)
-                Text("Region: ").bold() + Text(country.region)
-                Text("Subregion: ").bold() + Text(country.subregion ?? "N/A")
-                Text("Capital: ").bold() + Text(country.capital?.joined(separator: ", ") ?? "No capital")
-                VStack() {
-                    Text("Currency:").bold()
-                    ForEach(currencyList, id: \.self) { c in
-                        Text("• \(c)")
+                    Button("Save Country") {
+                        Task {
+                            await saveCountry(from: country, context: modelContext)
+                        }
                     }
+                    .buttonStyle(.borderedProminent)
+                    .padding(.vertical)
+                    
+                    Text(confirmSave)
+                        .foregroundStyle(.red)
+                        .font(.title2)
                 }
                 
-                Button("Save Country") {
-                    Task {
-                        await saveCountry(from: country, context: modelContext)
-                    }
+                if country.capitalInfo?.latlng != nil {
+                    MapView(country: country)
+                } else {
+                    Text("Map data not available")
+                        .foregroundStyle(.secondary)
                 }
-                .buttonStyle(.borderedProminent)
-                .padding(.vertical)
-                
-                Text(confirmSave)
-                    .foregroundStyle(.red)
-                    .font(.title2)
-            }
-            
-            if country.capitalInfo?.latlng != nil {
-                MapView(country: country)
-            } else {
-                Text("Map data not available")
-                    .foregroundStyle(.secondary)
             }
         }
     }

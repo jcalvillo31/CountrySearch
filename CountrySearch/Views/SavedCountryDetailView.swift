@@ -14,43 +14,50 @@ struct SavedCountryDetailView: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        ScrollView(showsIndicators: false) {
-    
-            FlagImageView(imageData: country.flagImage, width: 300, height: 200)
-                .padding(.bottom, 40)
-                .padding(.top, 10)
+        
+        ZStack {
+            Color(.gray)
+                .opacity(0.1)
+                .ignoresSafeArea()
                 
-            VStack(spacing: 10) {
-                Text("Country: ").bold() + Text(country.name)
-                Text("Region: ").bold() + Text(country.region)
-                Text("Subregion: ").bold() + Text(country.subregion ?? "N/A")
-                Text("Capital: ")
-                    .bold() + Text(
-                        country.capital?.joined(separator: ", ") ?? "N/A"
-                    )
+            ScrollView(showsIndicators: false) {
+                
+                FlagImageView(imageData: country.flagImage, width: 300, height: 200)
+                    .padding(.bottom, 40)
+                    .padding(.top, 10)
+                
+                VStack(spacing: 10) {
+                    Text("Country: ").bold() + Text(country.name)
+                    Text("Region: ").bold() + Text(country.region)
+                    Text("Subregion: ").bold() + Text(country.subregion ?? "N/A")
+                    Text("Capital: ")
+                        .bold() + Text(
+                            country.capital?.joined(separator: ", ") ?? "N/A"
+                        )
                     
-                VStack {
-                    Text("Currency:").bold()
-                    ForEach(country.currencies ?? ["N/A"], id: \.self) { c in
-                        Text("• \(c)")
+                    VStack {
+                        Text("Currency:").bold()
+                        ForEach(country.currencies ?? ["N/A"], id: \.self) { c in
+                            Text("• \(c)")
+                        }
                     }
                 }
-            }
-            .padding(.top)
+                .padding(.top)
                 
-            Button("Delete") {
-                context.delete(country)
-                try? context.save()
-                dismiss()
-            }
-            .buttonStyle(.borderedProminent)
-            .padding(.vertical)
-            
-            if country.coordinates != nil {
-                MapView2(country: country)
-            } else {
-                Text("Map data not available")
-                    .foregroundStyle(.secondary)
+                Button("Delete") {
+                    context.delete(country)
+                    try? context.save()
+                    dismiss()
+                }
+                .buttonStyle(.borderedProminent)
+                .padding(.vertical)
+                
+                if country.coordinates != nil {
+                    MapView2(country: country)
+                } else {
+                    Text("Map data not available")
+                        .foregroundStyle(.secondary)
+                }
             }
         }
     }
