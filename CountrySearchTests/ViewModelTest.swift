@@ -35,6 +35,7 @@ struct ViewModelTests {
         let mockService = MockDataService(result: .success(countries))
         let vm = ViewModel(service: mockService)
         
+        // This runs the mock "search" func above
         await vm.handleSearch(language: "english")
         
         #expect(vm.countries.count == 2)
